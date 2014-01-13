@@ -10,7 +10,12 @@ object EventSource {
   case class UnregisterListener(listener: ActorRef)
 }
 
-trait EventSource { this: Actor =>
+trait EventSource {
+  def sendEvent[T](event: T): Unit
+  def eventSourceReceive: Actor.Receive
+}
+
+trait EventSourceImpl extends EventSource { this: Actor =>
 
   import EventSource._
 
@@ -32,6 +37,11 @@ trait EventSource { this: Actor =>
       listeners = listeners filter { _ != listener }
 
   }
-
-
 }
+
+/** test class */
+class EventSourceTest extends Actor with EventSourceImpl {
+
+  def receive = eventSourceReceive
+}
+
